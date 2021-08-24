@@ -61,6 +61,10 @@ static void service_set_stream_routes (HttpCerver *http_cerver) {
 	HttpRoute *video_info_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/info", stream_video_info_handler);
 	http_route_child_add (main_route, video_info_route);
 
+	// GET /api/stream/videos/:id/image
+	HttpRoute *video_image_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/image", stream_video_image_handler);
+	http_route_child_add (main_route, video_image_route);
+
 	// GET /api/stream/videos/:id/data
 	HttpRoute *video_data_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/data", stream_video_data_handler);
 	http_route_child_add (main_route, video_data_route);
