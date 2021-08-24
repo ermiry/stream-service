@@ -3,6 +3,13 @@
 
 #include "runtime.h"
 
+#define MONGO_URI_SIZE				256
+#define MONGO_APP_NAME_SIZE			32
+#define MONGO_DB_SIZE				32
+
+#define VIDEOS_PATH					"/home/videos"
+#define IMAGES_PATH					"/home/images"
+
 struct _HttpResponse;
 
 extern RuntimeType RUNTIME;
