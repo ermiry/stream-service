@@ -69,6 +69,59 @@ Video *video_create (const char *filename) {
 
 }
 
+unsigned int videos_get_all_to_json (
+	const bson_t *opts,
+	char **json, size_t *json_len
+) {
+
+	return mongo_find_all_to_json (
+		videos_model,
+		bson_new (), opts,
+		"videos",
+		json, json_len
+	);
+
+}
+
+static bson_t *video_query_oid (const bson_oid_t *oid) {
+
+	bson_t *query = bson_new ();
+	if (query) {
+		(void) bson_append_oid (query, "_id", -1, oid);
+	}
+
+	return query;
+
+}
+
+unsigned int video_get_by_oid (
+	Video *video,
+	const bson_oid_t *oid,
+	const bson_t *query_opts
+) {
+
+	return mongo_find_one_with_opts (
+		videos_model,
+		video_query_oid (oid), query_opts,
+		video
+	);
+
+}
+
+unsigned int video_get_by_oid_to_json (
+	const bson_oid_t *oid,
+	const bson_t *query_opts,
+	char **json, size_t *json_len
+) {
+
+	return mongo_find_one_with_opts_to_json (
+		videos_model,
+		video_query_oid (oid), query_opts,
+		json, json_len
+	);
+
+}
+
 static bson_t *video_to_bson (const Video *video) {
 
 	bson_t *doc = bson_new ();

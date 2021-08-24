@@ -42,6 +42,23 @@ extern void video_delete (void *video_ptr);
 
 extern Video *video_create (const char *filename);
 
+extern unsigned int videos_get_all_to_json (
+	const bson_t *opts,
+	char **json, size_t *json_len
+);
+
+extern unsigned int video_get_by_oid (
+	Video *video,
+	const bson_oid_t *oid,
+	const bson_t *query_opts
+);
+
+extern unsigned int video_get_by_oid_to_json (
+	const bson_oid_t *oid,
+	const bson_t *query_opts,
+	char **json, size_t *json_len
+);
+
 extern unsigned int video_insert_one (const Video *video);
 
 #endif
