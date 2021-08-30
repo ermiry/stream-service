@@ -44,7 +44,7 @@ static void service_set_stream_routes (HttpCerver *http_cerver) {
 
 	/* register top level route */
 	// GET /api/stream
-	HttpRoute *main_route = http_route_create (REQUEST_METHOD_GET, "stream", stream_handler);
+	HttpRoute *main_route = http_route_create (REQUEST_METHOD_GET, "api/stream", stream_handler);
 	http_cerver_route_register (http_cerver, main_route);
 
 	/* register stream children routes */
@@ -89,6 +89,8 @@ static void start (void) {
 		cerver_set_receive_buffer_size (stream_service, CERVER_RECEIVE_BUFFER_SIZE);
 		cerver_set_thpool_n_threads (stream_service, CERVER_TH_THREADS);
 		cerver_set_handler_type (stream_service, CERVER_HANDLER_TYPE_THREADS);
+
+		cerver_set_reusable_address_flags (stream_service, true);
 
 		/*** web cerver configuration ***/
 		HttpCerver *http_cerver = (HttpCerver *) stream_service->cerver_data;

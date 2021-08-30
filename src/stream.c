@@ -201,11 +201,11 @@ static unsigned int stream_init_env (void) {
 
 	stream_env_get_cerver_connection_queue ();
 
-	errors |= videos_env_get_mongo_app_name ();
+	errors |= stream_env_get_mongo_app_name ();
 
-	errors |= videos_env_get_mongo_db ();
+	errors |= stream_env_get_mongo_db ();
 
-	errors |= videos_env_get_mongo_uri ();
+	errors |= stream_env_get_mongo_uri ();
 
 	return errors;
 
@@ -246,7 +246,7 @@ unsigned int stream_init (void) {
 
 	unsigned int retval = 0;
 
-	if (!videos_init_env ()) {
+	if (!stream_init_env ()) {
 		if (!service_mongo_connect ()) {
 			unsigned int errors = 0;
 
