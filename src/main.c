@@ -18,6 +18,7 @@
 #include "version.h"
 
 #include "routes/service.h"
+#include "routes/videos.h"
 
 static Cerver *stream_service = NULL;
 
@@ -43,13 +44,30 @@ static void service_set_stream_routes (HttpCerver *http_cerver) {
 
 	/* register top level route */
 	// GET /api/stream
-	HttpRoute *main_route = http_route_create (REQUEST_METHOD_GET, "stream", stream_handler);
+	HttpRoute *main_route = http_route_create (REQUEST_METHOD_GET, "api/stream", stream_handler);
 	http_cerver_route_register (http_cerver, main_route);
 
 	/* register stream children routes */
 	// GET /api/stream/version
 	HttpRoute *version_route = http_route_create (REQUEST_METHOD_GET, "version", stream_version_handler);
 	http_route_child_add (main_route, version_route);
+
+	/*** videos routes ***/
+	// GET /api/stream/videos
+	HttpRoute *videos_route = http_route_create (REQUEST_METHOD_GET, "videos", stream_videos_handler);
+	http_route_child_add (main_route, videos_route);
+
+	// GET /api/stream/videos/:id/info
+	HttpRoute *video_info_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/info", stream_video_info_handler);
+	http_route_child_add (main_route, video_info_route);
+
+	// GET /api/stream/videos/:id/image
+	HttpRoute *video_image_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/image", stream_video_image_handler);
+	http_route_child_add (main_route, video_image_route);
+
+	// GET /api/stream/videos/:id/data
+	HttpRoute *video_data_route = http_route_create (REQUEST_METHOD_GET, "videos/:id/data", stream_video_data_handler);
+	http_route_child_add (main_route, video_data_route);
 
 }
 
@@ -71,6 +89,8 @@ static void start (void) {
 		cerver_set_receive_buffer_size (stream_service, CERVER_RECEIVE_BUFFER_SIZE);
 		cerver_set_thpool_n_threads (stream_service, CERVER_TH_THREADS);
 		cerver_set_handler_type (stream_service, CERVER_HANDLER_TYPE_THREADS);
+
+		cerver_set_reusable_address_flags (stream_service, true);
 
 		/*** web cerver configuration ***/
 		HttpCerver *http_cerver = (HttpCerver *) stream_service->cerver_data;
