@@ -7,8 +7,8 @@
 #define MONGO_APP_NAME_SIZE			32
 #define MONGO_DB_SIZE				32
 
-#define VIDEOS_PATH					"/home/videos"
-#define IMAGES_PATH					"/home/images"
+#define VIDEOS_PATH					"/home/uploads/videos"
+#define IMAGES_PATH					"/home/uploads/images"
 
 struct _HttpResponse;
 
