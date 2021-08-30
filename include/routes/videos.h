@@ -12,7 +12,7 @@ extern void stream_videos_handler (
 );
 
 // GET /api/stream/videos/:id/info
-extern void stream_video_data_handler (
+extern void stream_video_info_handler (
 	const struct _HttpReceive *http_receive,
 	const struct _HttpRequest *request
 );
@@ -24,7 +24,7 @@ extern void stream_video_image_handler (
 );
 
 // GET /api/stream/videos/:id/data
-extern void stream_video_info_handler (
+extern void stream_video_data_handler (
 	const struct _HttpReceive *http_receive,
 	const struct _HttpRequest *request
 );

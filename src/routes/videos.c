@@ -44,7 +44,7 @@ void stream_videos_handler (
 }
 
 // GET /api/stream/videos/:id/info
-void stream_video_data_handler (
+void stream_video_info_handler (
 	const HttpReceive *http_receive,
 	const HttpRequest *request
 ) {
@@ -98,18 +98,24 @@ void stream_video_image_handler (
 	if (video_id) {
 		ServiceError error = service_video_get_image (video_id->str, image);
 		if (error == SERVICE_ERROR_NONE) {
+			cerver_log_msg ("image: %s", image);
+
 			(void) snprintf (
 				filename, FILENAME_DEFAULT_SIZE - 1,
 				"%s/%s",
 				IMAGES_PATH, image
 			);
 
-			(void) http_response_render_file (
+			cerver_log_msg ("filename: %s", filename);
+
+			(void) http_response_send_file (
 				http_receive, HTTP_STATUS_OK, filename
 			);
 		}
 
 		else {
+			cerver_log_error ("Failed to get image for video!");
+
 			service_error_send_response (error, http_receive);
 		}
 	}
@@ -121,15 +127,27 @@ void stream_video_image_handler (
 }
 
 // GET /api/stream/videos/:id/data
-void stream_video_info_handler (
+void stream_video_data_handler (
 	const HttpReceive *http_receive,
 	const HttpRequest *request
 ) {
 
 	const String *video_id = request->params[0];
+	const String *range = request->headers[HTTP_HEADER_RANGE];
 
-	if (video_id) {
-		// TODO:
+	if (video_id && range) {
+		ServiceError error = service_video_stream (
+			http_receive,
+			video_id->str, range->str
+		);
+
+		switch (error) {
+			case SERVICE_ERROR_NONE: break;
+
+			default:
+				service_error_send_response (error, http_receive);
+				break;
+		}
 	}
 
 	else {
