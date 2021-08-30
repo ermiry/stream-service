@@ -14,6 +14,10 @@
 
 #include "models/video.h"
 
+static void video_doc_parse (
+	void *video_ptr, const bson_t *video_doc
+);
+
 static CMongoModel *videos_model = NULL;
 
 unsigned int videos_model_init (void) {
@@ -22,6 +26,8 @@ unsigned int videos_model_init (void) {
 
 	videos_model = cmongo_model_create (VIDEOS_COLL_NAME);
 	if (videos_model) {
+		cmongo_model_set_parser (videos_model, video_doc_parse);
+
 		retval = 0;
 	}
 
@@ -66,6 +72,65 @@ Video *video_create (const char *filename) {
 	}
 
 	return video;
+
+}
+
+static void video_doc_parse (
+	void *video_ptr, const bson_t *video_doc
+) {
+
+	Video *video = (Video *) video_ptr;
+
+	bson_iter_t iter = { 0 };
+	if (bson_iter_init (&iter, video_doc)) {
+		char *key = NULL;
+		bson_value_t *value = NULL;
+		while (bson_iter_next (&iter)) {
+			key = (char *) bson_iter_key (&iter);
+			value = (bson_value_t *) bson_iter_value (&iter);
+
+			if (!strcmp (key, "_id")) {
+				bson_oid_copy (&value->value.v_oid, &video->oid);
+				bson_oid_to_string (&video->oid, video->id);
+			}
+
+			else if (!strcmp (key, "name") && value->value.v_utf8.str) {
+				(void) strncpy (
+					video->name,
+					value->value.v_utf8.str,
+					VIDEO_NAME_SIZE - 1
+				);
+
+				video->name_len = (unsigned int) strlen (video->name);
+			}
+
+			else if (!strcmp (key, "filename") && value->value.v_utf8.str) {
+				(void) strncpy (
+					video->filename,
+					value->value.v_utf8.str,
+					VIDEO_PATH_SIZE - 1
+				);
+
+				video->filename_len = (unsigned int) strlen (video->filename);
+			}
+
+			else if (!strcmp (key, "image") && value->value.v_utf8.str) {
+				(void) strncpy (
+					video->image,
+					value->value.v_utf8.str,
+					VIDEO_IMAGE_SIZE - 1
+				);
+
+				video->image_len = (unsigned int) strlen (video->image);
+			}
+
+			else if (!strcmp (key, "duration"))
+				video->duration = value->value.v_double;
+
+			else if (!strcmp (key, "date"))
+				video->date = (time_t) bson_iter_date_time (&iter) / 1000;
+		}
+	}
 
 }
 
